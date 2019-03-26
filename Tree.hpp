@@ -1,7 +1,6 @@
 namespace ariel{
 
-    class node{
-        public:
+    struct node{
         node* left;
         node* right;
         node* parent;
