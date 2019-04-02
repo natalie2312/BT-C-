@@ -1,19 +1,16 @@
 namespace ariel{
-
-    struct node{
-        node* left;
-        node* right;
-        node* parent;
-        int value;
-    };
+#include "BinaryTreeNode.hpp"
 
 
 class Tree{
 public:
+
+	BinaryTreeNode* _root;
+
     Tree();
     ~Tree();
 
-    Tree& insert(int data);
+    Tree& insert(int i);
     void remove(int i);
     int size();
     bool contains(int i);
@@ -22,19 +19,20 @@ public:
     int left(int i);
     int right(int i);
     void print();
+    BinaryTreeNode* findMin(BinaryTreeNode* N);
 
 private:
-    void insert(int data, node* t);
-    node* contains(int data, node* t);
-    void remove(int data, node* t);
-    int root(node* t);
-	int parent(int i, node* t);
-	int left(int i, node* t);
-	int right(int i, node* t);
-	void print(node* t);
+    void insert(int i, BinaryTreeNode* t);
+    BinaryTreeNode* contains(int data, BinaryTreeNode* t);
+    void remove(int data, BinaryTreeNode* t);
+    int root(BinaryTreeNode* t);
+	int parent(int i, BinaryTreeNode* t);
+	int left(int i, BinaryTreeNode* t);
+	int right(int i, BinaryTreeNode* t);
+	void print(BinaryTreeNode* t);
 
 
-	node* _root;
+	BinaryTreeNode* _root;
 	int _size;
 
 };
