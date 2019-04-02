@@ -25,6 +25,7 @@ public:
 private:
     void insert(int i, BinaryTreeNode* node);
     void inorderTreeWalk(BinaryTreeNode* x);
+    void removeSubtree(BinaryTreeNode* x);
 
 	int _size;
 

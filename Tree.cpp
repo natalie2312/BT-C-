@@ -15,7 +15,23 @@ Tree::Tree(){
 }
 
 Tree::~Tree(){
-  _root = NULL;
+  if(_root == NULL)
+		return;		// Nothing to do
+	removeSubtree(_root);
+}
+
+void Tree::removeSubtree(BinaryTreeNode* x)
+{
+	if(x == NULL)
+		return;	// Nothing to do
+		
+	BinaryTreeNode* left = x->leftNode;
+	BinaryTreeNode* right = x->rightNode;
+	
+	remove(x->nodeKey);
+	removeSubtree(left);
+	removeSubtree(right);	
+	
 }
 
 void Tree::print(){
