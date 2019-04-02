@@ -10,7 +10,7 @@ public:
     Tree();
     ~Tree();
 
-    Tree& insert(int i);
+    void insert(int i);
     void remove(int i);
     int size();
     bool contains(int i);
@@ -20,19 +20,12 @@ public:
     int right(int i);
     void print();
     BinaryTreeNode* findMin(BinaryTreeNode* N);
+    BinaryTreeNode* find(int i);
 
 private:
-    void insert(int i, BinaryTreeNode* t);
-    BinaryTreeNode* contains(int data, BinaryTreeNode* t);
-    void remove(int data, BinaryTreeNode* t);
-    int root(BinaryTreeNode* t);
-	int parent(int i, BinaryTreeNode* t);
-	int left(int i, BinaryTreeNode* t);
-	int right(int i, BinaryTreeNode* t);
-	void print(BinaryTreeNode* t);
+    void insert(int i, BinaryTreeNode* node);
+    void inorderTreeWalk(BinaryTreeNode* x);
 
-
-	BinaryTreeNode* _root;
 	int _size;
 
 };

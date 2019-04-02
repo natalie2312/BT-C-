@@ -2,9 +2,11 @@
 #include "Tree.hpp"
 #include <iostream>
 #include <stdexcept>
-#include "BinaryTreeNode.h"
+#include "BinaryTreeNode.hpp"
 
-// using namespace std;
+using std::cout;
+using std::endl;
+using namespace std;
 using namespace ariel;
 
 Tree::Tree(){
@@ -17,21 +19,33 @@ Tree::~Tree(){
 }
 
 void Tree::print(){
-    
+    BinaryTreeNode* x = _root;
+    Tree::inorderTreeWalk(x);
 }
 
-void Tree::print(BinaryTreeNode* t){
-
+void Tree::inorderTreeWalk(BinaryTreeNode* x){
+    if(x != NULL)
+	{
+		inorderTreeWalk(x->leftNode);
+		cout << "Node key: " << x->nodeKey << endl;
+		inorderTreeWalk(x->rightNode);
+	}
 }
 
 int Tree::size(){
-    return 0;
+    return _size;;
 }
 
-Tree& Tree::insert(int i){
-    BinaryTreeNode* node = new BinaryTreeNode(i);
-    Tree::insert(i, node);
-    return *this;
+void Tree::insert(int i){
+    if(Tree::contains(i)){
+        throw std::invalid_argument("Already Contains Element!");
+    }
+    else{
+        _size++;
+        BinaryTreeNode* node = NULL;
+        node->nodeKey= i;
+        Tree::insert(i, node);
+    }
 }
 
 void Tree::insert(int i, BinaryTreeNode* node){
@@ -81,22 +95,27 @@ int Tree::root(){
 }
 
 int Tree::left(int i){
-    return 0;
+     BinaryTreeNode *x = Tree::find(i);
+    return x->leftNode->nodeKey;
 }
 
 int Tree::right(int i){
-    return 0;
+    BinaryTreeNode *x = Tree::find(i);
+    return x->rightNode->nodeKey;
 }
 
 int Tree::parent(int i){
-    return 0;
+    BinaryTreeNode *x = Tree::find(i);
+    return x->parentNode->nodeKey;
 }
 
 void Tree::remove(int i){
     if(!Tree::contains(i)){
-        // לזרוק שגיאה
+        std::cout << "invalid input exeption" << '\n';
+        return;
     }
     else{
+        _size--;
         BinaryTreeNode* N = _root;
         while(N != NULL){
 
@@ -112,9 +131,8 @@ void Tree::remove(int i){
                     N = N->leftNode;
                 }
                 else{  //both child case
-                    BinaryTreeNode *temp = findMin(N->rightNode);
+                    BinaryTreeNode *temp = Tree::findMin(N->rightNode);
                     N->nodeKey = temp->nodeKey;
-                    N = N->rightNode;
                     remove(temp->nodeKey);
                 }
             }
@@ -128,10 +146,22 @@ void Tree::remove(int i){
     }
 }
 
-BinaryTreeNode* Tree::findMin (BinaryTreeNode* N)
-{
+BinaryTreeNode* Tree::findMin (BinaryTreeNode* N){
       while (N->leftNode != NULL) 
             N = N->leftNode;
       return N;
+}
+
+BinaryTreeNode* Tree::find(int i){
+    BinaryTreeNode* x = _root;
+	while(x != NULL){
+        if(x->nodeKey == i)
+         return x;
+		else if (i < x->nodeKey)
+			x = x->leftNode;
+		else
+			x = x->rightNode;
+	}
+	return NULL;
 }
 
