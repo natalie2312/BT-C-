@@ -122,10 +122,10 @@ int main() {
   .CHECK_THROWS (massivetree.right(150))
   .CHECK_THROWS (massivetree.insert(-30)) //insertion twice same element.
   .CHECK_OK (massivetree.remove(-30))
- // .CHECK_THROWS (massivetree.remove(-30)) //double-removing.
+  .CHECK_THROWS (massivetree.remove(-30)) //double-removing.
   .CHECK_THROWS (massivetree.remove(-1000)) //removing non-existant element.
-  //.CHECK_THROWS (massivetree.parent(-30)) //parent of a removed element.
-  //.CHECK_EQUAL (massivetree.size(),8) //size should decrease to 8.
+  .CHECK_THROWS (massivetree.parent(-30)) //parent of a removed element.
+  .CHECK_EQUAL (massivetree.size(),8) //size should decrease to 8.
   .CHECK_THROWS (massivetree.insert(0)) //insertion of already-existant element.
   .CHECK_OK (massivetree.remove(0)); //removing root. should pick left child (-10) as root now.
 

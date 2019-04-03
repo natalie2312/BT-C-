@@ -170,7 +170,8 @@ int Tree::parent(int i){
 }
 
 void Tree::remove(int i){
-  if(!contains(i)){
+
+     if(!contains(i)){
     throw runtime_error("You tried to remove non-existent node from the tree.");
   }
   if(_size==1){
@@ -178,37 +179,137 @@ void Tree::remove(int i){
     delete _root;
     return;
   } 
-     Node *N = find(i);
+    Node* toRemove = find(i);
+    if(i != root()){
+      Node* parentOf = find(parent(i));
+      bool toRemoveIsRightChild = toRemove->getData() > parentOf->getData();
+      if(toRemove->getLeft() == NULL && toRemove->getRight() == NULL){
+        //no childs. just deletes the node.
+        if(toRemoveIsRightChild){
+          parentOf->setRight(NULL);
+        }
+        else{
+          parentOf->setLeft(NULL);
+        }
+        delete toRemove;
+        _size--;
+      }
+      else if(toRemove->getRight() != NULL && toRemove ->getLeft()==NULL){
+        //toRemove has only right child. 
+        if(toRemoveIsRightChild){
+          parentOf->setRight(toRemove->getRight());
+        }
+        else{ //toRemove is actually a left child.
+          parentOf->setLeft(toRemove->getRight());
+        }
+        delete toRemove;
+        _size--;
+        return;
+      
+      } else if(toRemove ->getRight() == NULL && toRemove->getLeft()!=NULL){
+        //toRemove has only left child.
+        if(toRemoveIsRightChild){
+          parentOf->setRight(toRemove->getLeft());
+        }
+        else{ //toRemove is actually a left child.
+          parentOf->setLeft(toRemove->getLeft());
+        }
+        delete toRemove;
+        _size--;
+        return;
+      } else{
+        /*toRemove has 2 childs.
+        if toRemove is a right child,
+        will take the whole "left tree" of toRemove (left child)and add it to 
+        the left-most child of the "right tree"(right child) of toRemove.
+        */
+        if(toRemoveIsRightChild){
+          Node* concat = toRemove->getRight(); //guaranteed to have right child.
+          while(concat->getLeft() != NULL){ 
+            concat = concat->getLeft();
+          }
+          concat->setLeft(toRemove->getLeft());
+          parentOf->setRight(toRemove->getRight());
+          delete toRemove;
+          _size--;
+          return;
+        } else{
+          //to remove is left child. same logic, different side trees.
+          Node* concat = toRemove->getLeft(); //guaranteed to have left child.
+          while(concat->getRight() != NULL){
+            concat = concat -> getRight();
+          }
+          concat->setRight(toRemove->getRight()); 
+          parentOf->setLeft(toRemove->getLeft());
+          delete toRemove;
+          _size--;
+          return;
+        }
+      }
+    }
+    else{//i is the root. removing root. no childs for root has already been handled (size=1).
+      if(toRemove->getLeft() != NULL && toRemove->getRight() == NULL){
+        //only left child.
+        _root = toRemove->getLeft();
+        delete toRemove;
+        _size--;
+      }
+      else if(toRemove->getLeft() == NULL && toRemove->getRight() != NULL){
+        //only right child.
+        _root = toRemove->getRight();
+        delete toRemove;
+        _size--;
+      }
+      else{ //has 2 childs.
+        Node* concat = toRemove->getRight();
+        while(concat->getLeft() != NULL){
+          concat = concat->getLeft();
+        }
+        concat->setLeft(toRemove->getLeft());
+        _root = toRemove->getRight();
+        delete toRemove;
+        _size--;
+      }
+    }
+//   if(!contains(i)){
+//     throw runtime_error("You tried to remove non-existent node from the tree.");
+//   }
+//   if(_size==1){
+//     _size--;
+//     delete _root;
+//     return;
+//   } 
+//      Node *N = find(i);
 
-    //    Node* N = _root;
-     //   while(N != NULL){
+//     //    Node* N = _root;
+//      //   while(N != NULL){
 
-        //    if(N->getData() == i){
+//         //    if(N->getData() == i){
 
-                if (N->getLeft() == NULL && N->getRight()== NULL){ //no chlidren case
-                    N = NULL;                
-                }
-                else if(N->getLeft() == NULL){ //right child case
-                    N = N->getRight();
-                }
-                else if(N->getRight() == NULL){ //left child case
-                    N = N->getLeft();
-                }
-                else{  //both child case
-                    Node *temp = findMin(N->getRight());
-                    N->setData(temp->getData());
-                    delete temp;
-                    //remove(temp->getData());
-                }
-        //    }
-		    // else {
-            //     if (i < N->getData())
-			//         N = N->getLeft();
-		    //     else
-			//         N = N->getRight();
-            // }
-     //   }
-     _size--;
+//                 if (N->getLeft() == NULL && N->getRight()== NULL){ //no chlidren case
+//                     N = NULL;                
+//                 }
+//                 else if(N->getLeft() == NULL){ //right child case
+//                     N = N->getRight();
+//                 }
+//                 else if(N->getRight() == NULL){ //left child case
+//                     N = N->getLeft();
+//                 }
+//                 else{  //both child case
+//                     Node *temp = findMin(N->getRight());
+//                     N->setData(temp->getData());
+//                     delete temp;
+//                     //remove(temp->getData());
+//                 }
+//         //    }
+// 		    // else {
+//             //     if (i < N->getData())
+// 			//         N = N->getLeft();
+// 		    //     else
+// 			//         N = N->getRight();
+//             // }
+//      //   }
+//      _size--;
     
 }
 
