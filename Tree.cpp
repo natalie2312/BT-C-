@@ -170,14 +170,16 @@ int Tree::parent(int i){
 }
 
 void Tree::remove(int i){
-    cout << contains(5) << endl;
-
-    Node *N = find(i);
-
-    if(N==NULL){
+  if(!contains(i)){
     throw runtime_error("You tried to remove non-existent node from the tree.");
-    }
-    else{
+  }
+  if(_size==1){
+    _size--;
+    delete _root;
+    return;
+  } 
+     Node *N = find(i);
+
     //    Node* N = _root;
      //   while(N != NULL){
 
@@ -195,7 +197,7 @@ void Tree::remove(int i){
                 else{  //both child case
                     Node *temp = findMin(N->getRight());
                     N->setData(temp->getData());
-                    temp= NULL;
+                    delete temp;
                     //remove(temp->getData());
                 }
         //    }
@@ -206,8 +208,8 @@ void Tree::remove(int i){
 			//         N = N->getRight();
             // }
      //   }
-    }
-        _size--;
+     _size--;
+    
 }
 
 Node *Tree::findMin (Node* N){
