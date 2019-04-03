@@ -1,16 +1,33 @@
 namespace ariel{
-#include "BinaryTreeNode.hpp"
+
+class Node{
+    private:
+      int _data;
+      Node* left;
+      Node* right;
+      Node* parent;
+
+    public:
+      Node(int data); //constructor
+      Node* getLeft(); 
+      Node* getRight(); 
+      Node* getParent(); 
+      void setLeft(Node* l);
+      void setRight(Node* r);
+      void setParent(Node* p);
+      int getData();
+      void setData(int data);
+
+  };
 
 
 class Tree{
 public:
 
-	BinaryTreeNode* _root;
-
     Tree();
     ~Tree();
 
-    void insert(int i);
+    Tree& insert(int i);
     void remove(int i);
     int size();
     bool contains(int i);
@@ -19,15 +36,19 @@ public:
     int left(int i);
     int right(int i);
     void print();
-    BinaryTreeNode* findMin(BinaryTreeNode* N);
-    BinaryTreeNode* find(int i);
+    Node* findMin(Node* N);
+
 
 private:
-    void insert(int i, BinaryTreeNode* node);
-    void inorderTreeWalk(BinaryTreeNode* x);
-    void removeSubtree(BinaryTreeNode* x);
+
+    Node* find(int i);
+
+    void insert(int i, Node* node);
+    void print(Node* x);
+    void Destroy(Node* x);
 
 	int _size;
+    Node* _root;
 
 };
 

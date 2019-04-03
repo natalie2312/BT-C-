@@ -2,12 +2,50 @@
 #include "Tree.hpp"
 #include <iostream>
 #include <stdexcept>
-#include "BinaryTreeNode.hpp"
 
 using std::cout;
 using std::endl;
 using namespace std;
 using namespace ariel;
+
+Node::Node(int data){ //constructor for Node.
+  _data = data;
+  left = NULL;
+  right = NULL;
+  parent = NULL;
+}
+
+int Node::getData(){ //getter for data.
+  return _data;
+}
+
+Node* Node::getLeft(){ //getter for left child.
+  return left;
+}
+
+Node* Node::getRight(){ //getter for right child.
+  return right;
+}
+
+Node* Node::getParent(){ //getter for parent
+  return parent;
+}
+
+void Node::setData(int data){
+  _data = data;
+}
+
+void Node::setLeft(Node* l){
+  left = l;
+}
+
+void Node::setRight(Node* r){
+  right = r;
+}
+
+void Node::setParent(Node* p){
+  parent = p;
+}
 
 Tree::Tree(){
   _root = NULL;
@@ -17,166 +55,176 @@ Tree::Tree(){
 Tree::~Tree(){
   if(_root == NULL)
 		return;		// Nothing to do
-	removeSubtree(_root);
+  Destroy(_root);
 }
 
-void Tree::removeSubtree(BinaryTreeNode* x)
+void Tree::Destroy(Node* x)
 {
-	if(x == NULL)
-		return;	// Nothing to do
-		
-	BinaryTreeNode* left = x->leftNode;
-	BinaryTreeNode* right = x->rightNode;
-	
-	remove(x->nodeKey);
-	removeSubtree(left);
-	removeSubtree(right);	
-	
+  Destroy(x->getLeft());
+  Destroy(x->getRight());
+  delete x;	
 }
 
 void Tree::print(){
-    BinaryTreeNode* x = _root;
-    Tree::inorderTreeWalk(x);
+    Node* x = _root;
+    Tree::print(x);
 }
 
-void Tree::inorderTreeWalk(BinaryTreeNode* x){
+void Tree::print(Node* x){
     if(x != NULL)
 	{
-		inorderTreeWalk(x->leftNode);
-		cout << "Node key: " << x->nodeKey << endl;
-		inorderTreeWalk(x->rightNode);
+		print(x->getLeft());
+		cout << "Node key: " << x->getData() << endl;
+		print(x->getRight());
 	}
 }
 
 int Tree::size(){
-    return _size;;
+     return _size;
 }
 
-void Tree::insert(int i){
-    if(Tree::contains(i)){
-        throw std::invalid_argument("Already Contains Element!");
+Tree& Tree::insert(int i){
+    if(contains(i)){
+       throw runtime_error("already inside tree");
     }
     else{
-        _size++;
-        BinaryTreeNode* node = NULL;
-        node->nodeKey= i;
-        Tree::insert(i, node);
-    }
+        if(_size==0)
+          _root= new Node(i);
+        else{
+            Node* n= new Node(i);
+            insert(i, n);
+
+          }
+       _size++;
+     // std::cout << _root->getData() << '\n';
+   }
+   return *this;
 }
 
-void Tree::insert(int i, BinaryTreeNode* node){
-    BinaryTreeNode* y = NULL;
-	BinaryTreeNode* x = _root;
+void Tree::insert(int i, Node* n){
+    Node* y = NULL;
+	Node* x = _root;
 	
 	while(x != NULL)
 	{
 		y = x;
-		if(node->nodeKey < x->nodeKey)
-			x = x->leftNode;
+		if(n->getData() < x->getData())
+			x = x->getLeft();
 		else
-			x = x->rightNode;
+			x = x->getRight();
 	}
-	node->parentNode = y;
+	n->setParent(y);
 	
-	if(y == NULL)
-	{
-		_root = node; 	// tree was empty
-	} else if (node->nodeKey < y->nodeKey)
-	{
-		y->leftNode = node;
-	} else
-	{
-		y->rightNode = node;
+    if (n->getData() < y->getData()){
+		y->setLeft(n);
+	} 
+    else{
+		y->setRight(n);
 	}
-
 }
 
 bool Tree::contains(int i){
-    BinaryTreeNode* x = _root;
+    Node* x = find(i);
+    if(x== NULL)
+        return false;
+    return true;
 	
-	while(x != NULL)
-	{
-        if(x->nodeKey == i)
-         return true;
-		if (i < x->nodeKey)
-			x = x->leftNode;
-		else
-			x = x->rightNode;
-	}
-	return false;
+	// while(x != NULL)
+	// {
+    //     if(x->getData() == i)
+    //      return true;
+	// 	if (i < x->getData())
+	// 		x = x->getLeft();
+	// 	else
+	// 		x = x->getRight();
+	// }
+    // delete x;
+    // x= NULL;
+	// return false;
 }
 
 int Tree::root(){
-    return _root->nodeKey;
+    return _root->getData();
 }
 
 int Tree::left(int i){
-     BinaryTreeNode *x = Tree::find(i);
-    return x->leftNode->nodeKey;
+    Node *x = find(i);
+     if(x->getLeft()==NULL)
+        throw invalid_argument("There is no left child for requested node.");
+    return x->getLeft()->getData();
 }
 
 int Tree::right(int i){
-    BinaryTreeNode *x = Tree::find(i);
-    return x->rightNode->nodeKey;
+    Node *x = find(i);
+    if(x->getRight()==NULL)
+        throw invalid_argument("There is no left child for requested node.");
+    return x->getRight()->getData();
 }
 
 int Tree::parent(int i){
-    BinaryTreeNode *x = Tree::find(i);
-    return x->parentNode->nodeKey;
+    Node *x = find(i);
+    if(size()==0 || !contains(i) || root() == i){
+    throw invalid_argument("has no parent or does not contain specified node.");
+   }
+    return x->getParent()->getData();
 }
 
 void Tree::remove(int i){
-    if(!Tree::contains(i)){
-        std::cout << "invalid input exeption" << '\n';
-        return;
+    cout << contains(5) << endl;
+
+    Node *N = find(i);
+
+    if(N==NULL){
+    throw runtime_error("You tried to remove non-existent node from the tree.");
     }
     else{
-        _size--;
-        BinaryTreeNode* N = _root;
-        while(N != NULL){
+    //    Node* N = _root;
+     //   while(N != NULL){
 
-            if(N->nodeKey == i){
+        //    if(N->getData() == i){
 
-                if (N->leftNode == NULL && N->rightNode== NULL){ //no chlidren case
+                if (N->getLeft() == NULL && N->getRight()== NULL){ //no chlidren case
                     N = NULL;                
                 }
-                else if(N->leftNode == NULL){ //right child case
-                    N = N->rightNode;
+                else if(N->getLeft() == NULL){ //right child case
+                    N = N->getRight();
                 }
-                else if(N->rightNode == NULL){ //left child case
-                    N = N->leftNode;
+                else if(N->getRight() == NULL){ //left child case
+                    N = N->getLeft();
                 }
                 else{  //both child case
-                    BinaryTreeNode *temp = Tree::findMin(N->rightNode);
-                    N->nodeKey = temp->nodeKey;
-                    remove(temp->nodeKey);
+                    Node *temp = findMin(N->getRight());
+                    N->setData(temp->getData());
+                    temp= NULL;
+                    //remove(temp->getData());
                 }
-            }
-		    else {
-                if (i < N->nodeKey)
-			        N = N->leftNode;
-		        else
-			        N = N->rightNode;
-            }
-        }
+        //    }
+		    // else {
+            //     if (i < N->getData())
+			//         N = N->getLeft();
+		    //     else
+			//         N = N->getRight();
+            // }
+     //   }
     }
+        _size--;
 }
 
-BinaryTreeNode* Tree::findMin (BinaryTreeNode* N){
-      while (N->leftNode != NULL) 
-            N = N->leftNode;
+Node *Tree::findMin (Node* N){
+      while (N->getLeft() != NULL) 
+            N = N->getLeft();
       return N;
 }
 
-BinaryTreeNode* Tree::find(int i){
-    BinaryTreeNode* x = _root;
+Node* Tree::find(int i){
+    Node* x = _root;
 	while(x != NULL){
-        if(x->nodeKey == i)
+        if(x->getData() == i)
          return x;
-		else if (i < x->nodeKey)
-			x = x->leftNode;
+		else if (i < x->getData())
+			x = x->getLeft();
 		else
-			x = x->rightNode;
+			x = x->getRight();
 	}
 	return NULL;
 }
