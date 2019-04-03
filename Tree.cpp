@@ -124,24 +124,15 @@ void Tree::insert(int i, Node* n){
 }
 
 bool Tree::contains(int i){
-    Node* x = find(i);
-    if(x== NULL)
-        return false;
-    return true;
-	
-	// while(x != NULL)
-	// {
-    //     if(x->getData() == i)
-    //      return true;
-	// 	if (i < x->getData())
-	// 		x = x->getLeft();
-	// 	else
-	// 		x = x->getRight();
-	// }
-    // delete x;
-    // x= NULL;
-	// return false;
+  try{ //tries to find i inside binary tree.
+    Node* isIn = find(i);
+  }
+  catch(exception& e){ //exception indicates failure to find i.
+    return false;
+  }
+  return true;
 }
+
 
 int Tree::root(){
     return _root->getData();
@@ -157,7 +148,7 @@ int Tree::left(int i){
 int Tree::right(int i){
     Node *x = find(i);
     if(x->getRight()==NULL)
-        throw invalid_argument("There is no left child for requested node.");
+        throw invalid_argument("There is no Right child for requested node.");
     return x->getRight()->getData();
 }
 
@@ -320,6 +311,9 @@ Node *Tree::findMin (Node* N){
 }
 
 Node* Tree::find(int i){
+     if(size() == 0 ){
+    throw invalid_argument("Cannot find in an empty tree");
+  }
     Node* x = _root;
 	while(x != NULL){
         if(x->getData() == i)
@@ -329,6 +323,6 @@ Node* Tree::find(int i){
 		else
 			x = x->getRight();
 	}
-	return NULL;
+  throw runtime_error("Cannot find requested node."); //traverse through tree, did not find i.
 }
 
