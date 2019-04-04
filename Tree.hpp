@@ -36,7 +36,10 @@ public:
     int left(int i);
     int right(int i);
     void print();
+    Node* deleteNode(Node* root, int key);
     Node* findMin(Node* N);
+    Node* getRoot();
+
 
 
 private:
@@ -47,8 +50,9 @@ private:
     void print(Node* x);
     void Destroy(Node* x);
 
+
 	int _size;
-    Node* _root;
+  Node* _root;
 
 };
 

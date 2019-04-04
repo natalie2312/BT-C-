@@ -31,6 +31,10 @@ Node* Node::getParent(){ //getter for parent
   return parent;
 }
 
+Node* Tree::getRoot(){ //getter for parent
+  return _root;
+}
+
 void Node::setData(int data){
   _data = data;
 }
@@ -102,7 +106,7 @@ Tree& Tree::insert(int i){
 }
 
 void Tree::insert(int i, Node* n){
-    Node* y = NULL;
+  Node* y = NULL;
 	Node* x = _root;
 	
 	while(x != NULL)
@@ -160,108 +164,68 @@ int Tree::parent(int i){
     return x->getParent()->getData();
 }
 
-void Tree::remove(int i){
 
-     if(!contains(i)){
+void Tree::remove(int i){
+    if(!contains(i)){
     throw runtime_error("You tried to remove non-existent node from the tree.");
   }
-  if(_size==1){
-    _size--;
-    delete _root;
-    return;
-  } 
-    Node* toRemove = find(i);
-    if(i != root()){
-      Node* parentOf = find(parent(i));
-      bool toRemoveIsRightChild = toRemove->getData() > parentOf->getData();
-      if(toRemove->getLeft() == NULL && toRemove->getRight() == NULL){
-        //no childs. just deletes the node.
-        if(toRemoveIsRightChild){
-          parentOf->setRight(NULL);
-        }
-        else{
-          parentOf->setLeft(NULL);
-        }
-        delete toRemove;
-        _size--;
-      }
-      else if(toRemove->getRight() != NULL && toRemove ->getLeft()==NULL){
-        //toRemove has only right child. 
-        if(toRemoveIsRightChild){
-          parentOf->setRight(toRemove->getRight());
-        }
-        else{ //toRemove is actually a left child.
-          parentOf->setLeft(toRemove->getRight());
-        }
-        delete toRemove;
-        _size--;
-        return;
-      
-      } else if(toRemove ->getRight() == NULL && toRemove->getLeft()!=NULL){
-        //toRemove has only left child.
-        if(toRemoveIsRightChild){
-          parentOf->setRight(toRemove->getLeft());
-        }
-        else{ //toRemove is actually a left child.
-          parentOf->setLeft(toRemove->getLeft());
-        }
-        delete toRemove;
-        _size--;
-        return;
-      } else{
-        /*toRemove has 2 childs.
-        if toRemove is a right child,
-        will take the whole "left tree" of toRemove (left child)and add it to 
-        the left-most child of the "right tree"(right child) of toRemove.
-        */
-        if(toRemoveIsRightChild){
-          Node* concat = toRemove->getRight(); //guaranteed to have right child.
-          while(concat->getLeft() != NULL){ 
-            concat = concat->getLeft();
-          }
-          concat->setLeft(toRemove->getLeft());
-          parentOf->setRight(toRemove->getRight());
-          delete toRemove;
-          _size--;
-          return;
-        } else{
-          //to remove is left child. same logic, different side trees.
-          Node* concat = toRemove->getLeft(); //guaranteed to have left child.
-          while(concat->getRight() != NULL){
-            concat = concat -> getRight();
-          }
-          concat->setRight(toRemove->getRight()); 
-          parentOf->setLeft(toRemove->getLeft());
-          delete toRemove;
-          _size--;
-          return;
-        }
-      }
-    }
-    else{//i is the root. removing root. no childs for root has already been handled (size=1).
-      if(toRemove->getLeft() != NULL && toRemove->getRight() == NULL){
-        //only left child.
-        _root = toRemove->getLeft();
-        delete toRemove;
-        _size--;
-      }
-      else if(toRemove->getLeft() == NULL && toRemove->getRight() != NULL){
-        //only right child.
-        _root = toRemove->getRight();
-        delete toRemove;
-        _size--;
-      }
-      else{ //has 2 childs.
-        Node* concat = toRemove->getRight();
-        while(concat->getLeft() != NULL){
-          concat = concat->getLeft();
-        }
-        concat->setLeft(toRemove->getLeft());
-        _root = toRemove->getRight();
-        delete toRemove;
-        _size--;
-      }
-    }
+  _root= deleteNode(getRoot(), i);
+  _size--;
+}
+
+
+/* Given a binary search tree and a key, this function deletes the key 
+   and returns the new root */
+Node* Tree::deleteNode(Node* root, int key) 
+{ 
+    // base case 
+    if (root == NULL) return root; 
+  
+    // If the key to be deleted is smaller than the root's key, 
+    // then it lies in left subtree 
+    if (key < root->getData()) 
+        root->setLeft(deleteNode(root->getLeft(), key)); 
+  
+    // If the key to be deleted is greater than the root's key, 
+    // then it lies in right subtree 
+    else if (key > root->getData()) 
+        root->setRight(deleteNode(root->getRight(), key)); 
+  
+    // if key is same as root's key, then This is the node 
+    // to be deleted 
+    else
+    { 
+        // node with only one child or no child 
+        if (root->getLeft() == NULL) 
+        { 
+            Node *temp = root->getRight(); 
+            free(root); 
+            return temp; 
+        } 
+        else if (root->getRight() == NULL) 
+        { 
+            Node *temp = root->getLeft(); 
+            free(root); 
+            return temp; 
+        } 
+  
+        // node with two children: Get the inorder successor (smallest 
+        // in the right subtree) 
+        Node* temp = findMin(root->getRight()); 
+  
+        // Copy the inorder successor's content to this node 
+        root->setData(temp->getData()); 
+  
+        // Delete the inorder successor 
+        root->setRight(deleteNode(root->getRight(), temp->getData())); 
+    } 
+    return root; 
+} 
+
+
+//void Tree::remove(int i){
+
+
 //   if(!contains(i)){
 //     throw runtime_error("You tried to remove non-existent node from the tree.");
 //   }
@@ -302,7 +266,7 @@ void Tree::remove(int i){
 //      //   }
 //      _size--;
     
-}
+//}
 
 Node *Tree::findMin (Node* N){
       while (N->getLeft() != NULL) 
